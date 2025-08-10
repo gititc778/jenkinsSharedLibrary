@@ -1,6 +1,8 @@
 def call(buildTag) {
-    sh """
-        sed -i "s/IMAGE_TAG/${buildTag}/g" deployment.yaml
-        kubectl apply -f deployment.yaml
-    """
+    withCredentials([file(credentialsId: 'kubeconfig-creds', variable: 'KUBECONFIG')]) {
+        sh """
+            helm upgrade --install sampleapp ./helm-charts/sampleApp \
+                --set image.tag=${buildTag} \              
+        """
+    }
 }
